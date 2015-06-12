@@ -87,6 +87,8 @@ class LDAP_auth extends Form
     */
     public function init()
     {
+    	parent::init();
+    	
         $this->ldap_auth = $this->options['ldap_auth'];
 
         foreach( $this->ldap_auth as $key => $value )
