@@ -83,7 +83,6 @@ class LDAP_auth extends Form
 	/**
     * Populate our object vars
     *
-    * @param array $form An array of form data including fields and options.
     * @return null
     */
     public function init()

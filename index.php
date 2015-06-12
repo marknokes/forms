@@ -43,8 +43,8 @@
             *         'memberOf=CN=,OU=,OU=',
             *     ),
             *     'success'     => array(
-            *         'success_action'  => 'Redirect',
-            *         'success_data'    => 'http://www.domain.com'
+            *         'action'  => 'Redirect',
+            *         'data'    => 'http://www.domain.com'
             *     )
             * ),
             */

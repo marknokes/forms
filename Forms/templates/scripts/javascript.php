@@ -107,8 +107,8 @@ jQuery(document).ready(function($){
                     $formControl.addClass('has-error');
                 } else if (response === '3') {
                     message = '<div class="alert alert-danger">Incorrect username or password.</div>';
-                } else if (JSON.parse(response).success_action === 'Redirect') {
-                    window.parent.location = JSON.parse(response).success_data;
+                } else if (JSON.parse(response).action === 'Redirect') {
+                    window.parent.location = JSON.parse(response).data;
                 } else {
 					var required_fields = JSON.parse(response),
                         list = '<ol>';
