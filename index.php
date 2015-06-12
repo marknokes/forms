@@ -12,6 +12,11 @@
 
         $Form = new \Form\Form();
 
+        /**
+        *  Use this for an auth form
+        *  $Form = new \Form\LDAP_Auth();
+        */
+
         $Form->options = array(
             'tmp_dir'               => 'C:\\tmp\\', // required for sending email attachments. default is C:\tmp\
             'id'                    => 'form-css-id', // required. default is form-css-id
@@ -24,9 +29,27 @@
             'recaptcha'             => false, // required. default is false
             'recaptcha_site_key'    => '', // optional. required if recaptcha = true
             'recaptcha_secret_key'  => '', // optional. required if recaptcha = true
+
+            /**
+            * Use these options if using $Form = new \Form\LDAP_Auth();
+            *
+            * 'ldap_auth' => array(
+            *     'ad_server'   => 'ldap.server.hostname',
+            *     'base_dn'     => 'DC=dn,DC=base',
+            *     'ldap_user'   => 'CN=name,CN=distinguished,DC=user,DC=ldap',
+            *     'ldap_pass'   => 'ldap_user_password',
+            *     'search'      => array(
+            *         'memberOf=CN=,OU=,OU=',
+            *         'memberOf=CN=,OU=,OU=',
+            *     ),
+            *     'success'     => array(
+            *         'success_action'  => 'Redirect',
+            *         'success_data'    => 'http://www.domain.com'
+            *     )
+            * ),
+            */
             
             /**
-            *
             * Use these options to save data to Hannon Hill's Cascade Server
             *
             * 'save'                  => array(
@@ -40,7 +63,7 @@
             * 'auth'                  => array( // optional
             *     'username' => '',
             *     'password' => ''
-            * )
+            * ),
             */
         );
 
@@ -56,24 +79,6 @@
             * Use these fields if ajax_action is set to ldap_auth. Right now it only does a redirect, however
             * you may have it save a cookie, set a session var, or something else.
             *
-            *   'ad_groups' => array(
-            *       'fieldName'     => 'ad_groups[]',
-            *       'type'          => 'hidden',
-            *       'default_value' => array(
-            *           'memberOf=CN=Group,OU=Org_unit,OU=Org_unit,OU=Org_unit',
-            *           'memberOf=CN=Group,OU=Org_unit,OU=Org_unit,OU=Org_unit',
-            *       )
-            *   ),
-            *   'success_action' => array(
-            *       'fieldName'     => 'success_action',
-            *       'type'          => 'hidden',
-            *       'default_value' => 'Redirect'
-            *   ),
-            *   'success_data' => array(
-            *       'fieldName'     => 'success_data',
-            *       'type'          => 'hidden',
-            *       'default_value' => 'http://www.google.com'
-            *   ),
             *   'username' => array(
             *       'fieldName' => 'Username',
             *       'type'      => 'text'

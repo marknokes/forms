@@ -9,33 +9,24 @@ switch( $_POST['ajax_action'] )
     case "process_form" :
         
         if ( isset( $_SESSION['form'] ) )
-		{
-			$Form = $_SESSION['form'];
-			$return = $Form->validate_submission();
-		}
+        {
+            $Form = $_SESSION['form'];
+            $return = $Form->validate_submission();
+        }
 
-	    break;
+        break;
 
     case "ldap_auth" :
 
-        if ( !isset( $_POST['ad_groups'], $_POST['success_action'], $_POST['success_data'], $_POST['username'], $_POST['password'] )
-            || empty( $_POST['ad_groups'] )
-            || empty( $_POST['success_action'] )
-            || empty( $_POST['success_data'] ) )
-        {
+        if ( !isset( $_POST['username'], $_POST['password'], $_SESSION['form'] ) ) {
             $return = '0';
             break;
         }
 
-        $LDAP_Auth = new \Form\LDAP_Auth( $_POST['ad_groups'] );
+        $LDAP_Auth = $_SESSION['form'];
 
-        $success_action = json_encode( array(
-            'success_action' => $_POST['success_action'],
-            'success_data'   => $_POST['success_data']
-        ) );
+        $return = $LDAP_Auth->authorize() ? json_encode( $LDAP_Auth->ldap_auth['success'] ) : '3';
 
-        $return = $LDAP_Auth->authorize() ? $success_action : '3';
-        
         break;
 }
 

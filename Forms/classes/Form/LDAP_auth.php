@@ -3,7 +3,7 @@
 /**
 *    This is a PHP library that handles LDAP authentication to an AD server
 *    @copyright Copyright (c) 2015  Mark Nokes
-*	 @link      https://github.com/marknokes
+*    @link      https://github.com/marknokes
 * 
 *    This program is free software: you can redistribute it and/or modify
 *    it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@
 
 namespace Form;
 
-class LDAP_auth
+class LDAP_auth extends Form
 {
 	/**
 	* The username to be authenticated
@@ -39,25 +39,25 @@ class LDAP_auth
 	* The AD server hostname to which we will connect
 	* @var string
 	*/
-	private $ad_server = 'ad.server.hostname';
+	private $ad_server = '';
 
 	/**
 	* The base distinguished name on the AD server
 	* @var string
 	*/
-	private $base_dn = 'DC=base,DC=dn';
+	private $base_dn = '';
 
 	/**
 	* The primary AD user distinguished name
 	* @var string
 	*/
-	private $ldap_user = 'CN=name,CN=distinguished,DC=user,DC=ldap';
+	private $ldap_user = '';
 
 	/**
 	* The primary AD user password
 	* @var string
 	*/
-	private $ldap_pass = 'ldap password';
+	private $ldap_pass = '';
 
 	/**
 	* LDAP link identifier
@@ -76,14 +76,28 @@ class LDAP_auth
 	*
 	* @param array $search An array of AD distinguished names to search. Ex: memberOf=CN=Group,OU=Organizational Unit,OU=Organizational Unit,OU=Organizational Unit
 	*/
-	public function __construct( $search )
+	public function __construct()
 	{
-		$this->ldap = $this->ldap_connect();
-
-		$this->ldap_set_opts();
-
-		$this->search = $search;
 	}
+
+	/**
+    * Populate our object vars
+    *
+    * @param array $form An array of form data including fields and options.
+    * @return null
+    */
+    public function init()
+    {
+        $this->ldap_auth = $this->options['ldap_auth'];
+
+        foreach( $this->ldap_auth as $key => $value )
+			$this->$key = $value;
+
+        // For calling authorize() in object context from our ajax.php file.
+        $_SESSION['form'] = $this;
+
+        return null;
+    }
 
 	/**
 	* Create the LDAP connection
@@ -166,6 +180,8 @@ class LDAP_auth
 	*/
 	private function ldap_build_search_string()
 	{
+		$search = $this->search;
+
 		if ( sizeof( $this->search ) === 0 )
 			return false;
 
@@ -175,9 +191,9 @@ class LDAP_auth
 
 		$search_multiple_groups ? $str .= ')(|' : $str.= ')';
 
-		array_walk( $this->search, array( $this, 'sanatize_str' ) );
+		array_walk( $search, array( $this, 'sanatize_str' ) );
 
-		foreach( $this->search as $data )
+		foreach( $search as $data )
 			$str .= '('. $data .')';
 
 		$str .= $search_multiple_groups ? '))' : ')';
@@ -226,7 +242,11 @@ class LDAP_auth
 	* @return bool TRUE on successful binding FALSE on failure.
 	*/
 	public function authorize()
-	{
+    {
+		$this->ldap = $this->ldap_connect();
+		
+		$this->ldap_set_opts();
+		
 		if ( empty( $_POST['username'] ) || empty( $_POST['password'] ) || false === $this->ldap_bind( $this->ldap_user, $this->ldap_pass ) )
 			return false;
 
