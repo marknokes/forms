@@ -1,0 +1,68 @@
+<system-data-structure>
+  <group identifier="form-details" label="Form Details">
+    <text type="radiobutton" identifier="ajax_action" label="Ajax Action" default="process_form" required="true">
+      <radio-item value="process_form" show-fields="form-details/use-recaptcha, form-details/email-results, form-details/save-results"/>
+      <radio-item value="ldap_auth" show-fields="ad-groups, form-details/success_action, form-details/success_data"/>
+    </text>
+    <text identifier="form-title" label="Form Title" required="true"/>
+    <text type="checkbox" identifier="use-recaptcha" label="Use ReCaptcha?">
+      <checkbox-item value="Yes"/>
+    </text>
+    <text type="checkbox" identifier="email-results" label="Email Results">
+      <checkbox-item value="Yes" show-fields="form-details/email-to, form-details/email-subject"/>
+    </text>
+    <text identifier="email-to" label="Email to" required="true" help-text="Separate multiple email addresses with a comma"/>
+    <text identifier="email-subject" label="Email Subject" required="true"/>
+    <text type="checkbox" identifier="save-results" label="Save Results" help-text="Results are saved in the form-submissions folder. If there isn't one inside your forms folder please create one.">
+      <checkbox-item value="Yes" show-fields="form-details/results-folder"/>
+    </text>
+    <text identifier="results-folder" label="Results Folder" default="form-submissions" required="true" help-text="This folder needs to be in the same folder as the form."/>
+    <asset type="file" identifier="css-stylesheet" label="CSS Stylesheet"/>
+    <text type="dropdown" identifier="success_action" label="Success Action">
+      <dropdown-item value="Redirect"/>
+    </text>
+    <text identifier="success_data" label="Success Data"/>
+  </group>
+  <group identifier="ad-groups" label="AD Groups">
+    <text identifier="group" label="Group" multiple="true" required="true"/>
+  </group>
+  <group identifier="fields" label="Fields">
+    <group identifier="field" label="Field" multiple="true">
+      <text identifier="field-name" label="Field Name" required="true"/>
+      <text type="dropdown" identifier="field-type" label="Field Type">
+        <dropdown-item value="Email" show-fields="fields/field/cloneable, fields/field/required, fields/field/send-form-attachment, fields/field/reply-to-address"/>
+        <dropdown-item value="One line text" show-fields="fields/field/required, fields/field/cloneable"/>
+        <dropdown-item value="Textarea" show-fields="fields/field/required"/>
+        <dropdown-item value="Checkbox(s)" show-fields="fields/field/required, fields/field/checkbox-values"/>
+        <dropdown-item value="Radio Buttons" show-fields="fields/field/radio-values"/>
+        <dropdown-item value="Message" show-fields="fields/field/message"/>
+        <dropdown-item value="Datepicker" show-fields="fields/field/datepicker, fields/field/required"/>
+        <dropdown-item value="Timepicker" show-fields="fields/field/timepicker, fields/field/required"/>
+        <dropdown-item value="Dropdown" show-fields="fields/field/dropdown-values, fields/field/required, fields/field/multiple-select"/>
+        <dropdown-item value="Password"/>
+        <dropdown-item value="Username"/>
+      </text>
+      <text type="checkbox" identifier="cloneable" label="Cloneable">
+        <checkbox-item value="Yes"/>
+      </text>
+      <text type="checkbox" identifier="required" label="Required?">
+        <checkbox-item value="Yes"/>
+      </text>
+      <text type="checkbox" identifier="send-form-attachment" label="Send Form Attachment" help-text="Send a text document of the form data as email attachment to the form submitter">
+        <checkbox-item value="Yes"/>
+      </text>
+      <text type="checkbox" identifier="reply-to-address" label="Reply To Address">
+        <checkbox-item value="Yes"/>
+      </text>
+      <text identifier="radio-values" label="Radio values" multiple="true"/>
+      <text identifier="checkbox-values" label="Checkbox value(s)" multiple="true"/>
+      <text identifier="dropdown-values" label="Dropdown Values" multiple="true"/>
+      <text type="checkbox" identifier="multiple-select" label="Multiple Select">
+        <checkbox-item value="Yes"/>
+      </text>
+      <text wysiwyg="true" identifier="message" label="Message"/>
+      <text identifier="datepicker" label="Datepicker" default="Placeholder. No value required." size="25"/>
+      <text identifier="timepicker" label="Timepicker" default="Placeholder. No value required." size="25"/>
+    </group>
+  </group>
+</system-data-structure>

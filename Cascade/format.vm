@@ -1,0 +1,254 @@
+[system-view:internal]
+<p>Form code is hidden from view. Don&apos;t worry, it&apos;s here!</p>
+[/system-view:internal]
+[system-view:external]
+#set( $formDetails = $_XPathTool.selectSingleNode( $contentRoot, '//form-details' ) )
+#set( $ajax_action = $formDetails.getChild("ajax_action").value )
+#set( $fields = $_XPathTool.selectNodes( $contentRoot, '//field' ) )
+#set( $site = $_XPathTool.selectSingleNode( $contentRoot, '//site' ).value )
+#set( $title = $formDetails.getChild("form-title").value )
+#set( $formID = $title.replaceAll("[^a-zA-Z]","-").toLowerCase() )
+#set( $stylesheetPath = $formDetails.getChild("css-stylesheet").getChild("path").value )
+#if( $stylesheetPath == '/' )
+    #set( $stylesheetPath = '' )
+#end
+<!--#passthrough-top<?php
+
+require_once 'REPLACE_ME\loader.php';
+
+#if ( "ldap_auth" == $ajax_action )
+$Form = new \Form\LDAP_Auth();
+#elseif( "process_form" == $ajax_action )
+$Form = new \Form\Form();
+#end
+
+$Form->options = array(
+    'id' => '$formID',
+    #if( "Yes" == $formDetails.getChild("email-results").value )
+    'email' => true,
+    'to' => '$formDetails.getChild("email-to").value',
+    'subject' => '$formDetails.getChild("email-subject").value',
+    #end
+    #if( "Yes" == $formDetails.getChild("save-results").value )
+    'save' => array(
+        'to_save' => array( 
+            'path' => dirname( $_SERVER['PHP_SELF'] ) . '/$formDetails.getChild("results-folder").value',
+            'fileName' => pathinfo( $_SERVER['PHP_SELF'] )['filename'] . '.csv'
+        ),
+        'site' => '$site'
+    ),
+    'soapURL' => 'REPLACE_ME',
+    'auth' => array(
+        'username' => 'REPLACE_ME',
+        'password' => 'REPLACE_ME'
+    ),
+    #end
+    #if( "Yes" == $formDetails.getChild("use-recaptcha").getChild("value").value )
+    'recaptcha' => true,
+    'recaptcha_site_key'    => 'REPLACE_ME',
+    'recaptcha_secret_key'  => 'REPLACE_ME',
+    #end
+    'stylesheet_path' => '${stylesheetPath}',
+    #if ( "ldap_auth" == $ajax_action )
+        #set( $adGroups = $_XPathTool.selectNodes( $contentRoot, '//ad-groups/group' ) )
+        #set( $success_action = $formDetails.getChild("success_action").value )
+        #set( $success_data = $formDetails.getChild("success_data").value )
+        'ldap_auth' => array(
+            'ad_server' => 'REPLACE_ME',
+            'base_dn' => 'REPLACE_ME',
+            'ldap_user' => 'REPLACE_ME',
+            'ldap_pass' => 'REPLACE_ME',
+            'search' => array(
+                #foreach ( $group in $adGroups )
+                    '$group.value',
+                #end
+            ),
+            'success' => array(
+                'action' => '$success_action',
+                'data' => '$success_data'
+            )
+        ),
+    #end
+);
+
+$Form->fields = array(
+    'ajax_action' => array(
+        'fieldName' => 'ajax_action',
+        'type' => 'hidden',
+        'default_value' => '$ajax_action'
+    ),    
+#set( $i = 1 )
+#foreach ( $field in $fields )
+#set( $fieldName = $field.getChild("field-name").value.replaceAll("[\']", "\\'") )
+#set( $fieldType = $field.getChild("field-type").value )
+#set( $req = $field.getChild("required").value )
+#set( $required = "false" )
+#if ( "Yes" == $req )
+    #set( $required = "true" )
+#end
+## Radio Buttons
+#if ( "Radio Buttons" == $fieldType )
+    #set( $options = $_XPathTool.selectNodes( $field, 'radio-values' ) )
+    'field-${i}' => array(
+        'fieldName' => '${fieldName}',
+        'type' => 'radio',
+        'required' => false,
+        'options' => array(
+        #foreach ( $option in $options )
+        #set ( $value = $option.value )
+            '$value',
+        #end
+        )
+    ),
+#end
+## Dropdown
+#if ( "Dropdown" == $fieldType )
+    #set( $options = $_XPathTool.selectNodes( $field, 'dropdown-values' ) )
+    #set( $multi = "false" )
+    #if( "Yes" == $_XPathTool.selectSingleNode( $field, 'multiple-select' ).value )
+        #set( $multi = "true" )
+    #end
+    'field-${i}' => array(
+        'fieldName' => '${fieldName}',
+        'type' => 'dropdown',
+        'required' => $required,
+        'options' => array(
+        #foreach ( $option in $options )
+        #set ( $value = $option.value )
+            '$value',
+        #end
+        ),
+        'multiple' => $multi
+        
+    ),
+#end
+## Email
+#if ( "Email" == $fieldType )
+    #set( $sendAttachment = "false" )
+    #set( $replyTo = "false" )
+    #set( $cloneable = "false" )
+    #if ( "Yes" == $field.getChild("send-form-attachment").value )
+        #set( $sendAttachment = "true" )
+    #end
+    #if ( "Yes" == $field.getChild("reply-to-address").value )
+        #set( $replyTo = "true" )
+    #end
+    #if ( "Yes" == $field.getChild("cloneable").value )
+        #set( $cloneable = "true" )
+    #end
+    'field-${i}' => array(
+        'fieldName' => '${fieldName}',
+        'type' => 'email',
+    	'required' => $required,
+        'cloneable' => $cloneable,
+        'sendAttachment' => $sendAttachment,
+        'replyTo' => $replyTo
+    ),
+#end
+## Text
+#if ( "One line text" == $fieldType )
+    #set( $cloneable = $field.getChild("cloneable").value )
+    #if ( "Yes" == $cloneable )
+        #set( $cloneable = "true" )
+    #else
+        #set( $cloneable = "false" )
+    #end
+    'field-${i}' => array(
+        'fieldName' => '${fieldName}',
+        'type' => 'text',
+		'required' => $required,
+        'cloneable' => $cloneable
+    ),
+#end
+## Username
+#if ( "Username" == $fieldType )
+    'username' => array(
+        'fieldName' => '${fieldName}',
+        'type' => 'text'
+    ),
+#end
+## Password
+#if ( "Password" == $fieldType )
+    'password' => array(
+        'fieldName' => '${fieldName}',
+        'type' => 'password'
+    ),
+#end
+## Datepicker
+#if ( "Datepicker" == $fieldType )
+    'field-${i}' => array(
+        'fieldName' => '${fieldName}',
+        'type' => 'datepicker',
+    	'required' => $required
+    ),
+#end
+## Timepicker
+#if ( "Timepicker" == $fieldType )
+    'field-${i}' => array(
+        'fieldName' => '${fieldName}',
+        'type' => 'timepicker',
+        'required' => $required
+    ),
+#end
+## Textarea
+#if ( "Textarea" == $fieldType )
+    'field-${i}' => array(
+        'fieldName' => '${fieldName}',
+        'type' => 'textarea',
+    	'required' => $required
+    ),
+#end
+## Checkbox
+#if ( "Checkbox(s)" == $fieldType )
+    #set( $checkboxOptions = $_XPathTool.selectNodes( $field, 'checkbox-values' ) )
+    'field-${i}' => array(
+        'fieldName' => '${fieldName}',
+        'type' => 'checkbox',
+    	'required' => $required,
+        'default_value' => 'Checked',
+        'options' => array(
+        #foreach ( $checkboxOption in $checkboxOptions )
+        #set ( $checkboxValue = $checkboxOption.value )
+            '$checkboxValue',
+        #end
+        )
+    ),
+#end
+## Message
+#if ( "Message" == $fieldType )
+    #set( $message = $field.getChild("message") )
+    'field-${i}' => array(
+        'fieldName' => '${fieldName}',
+        'type' => 'message',
+        'default_value' => '$_SerializerTool.serialize($message, true).replaceAll("[\']", "\\'")'
+        
+    ),
+#end
+#set( $i = $i + 1 )
+## end foreach  
+#end
+);
+
+$Form->init();
+
+?>
+#passthrough-top-->
+
+<head>
+	
+    <title>$title</title>
+    
+    <meta http-equiv="Content-type" content="text/html;charset=UTF-8"/>
+    
+    <?php $Form->print_styles(); ?>
+    
+</head>
+
+<body>
+
+    <?php $Form->get(); ?>
+    
+    <?php $Form->print_scripts(); ?>
+    
+</body>
+[/system-view:external]
