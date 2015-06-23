@@ -467,6 +467,15 @@ class Form {
                                 
             if ( $is_required_checkbox || $is_required_array || $is_required )
                $required[] = $field_id;
+
+            // Can't forget to set empty checkboxes and multi select fields!!!
+            if ( 'checkbox' == $data['type'] && !isset( $_POST[ $field_id ] ) )
+                $_POST[ $field_id ] = array();
+            if ( 'dropdown' == $data['type'] && isset( $data['multiple'] ) && true == $data['multiple'] && !isset( $_POST[ $field_id ] ) )
+                $_POST[ $field_id ] = array();
+
+            // let's keep the fields in order, shall we?
+            ksort( $_POST, SORT_NATURAL );
         }
         
         // we don't want to email these!

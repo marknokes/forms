@@ -52,20 +52,6 @@ class Cascade_Server
         $headers = array();
         $to_append = "";
 
-        // Can't forget about checkbox and multi select!!!
-        foreach( $this->fields as $field_id => $data )
-        {
-        	if ( 'checkbox' == $data['type'] && !isset( $_POST[ $field_id ] ) )
-        		// none checked. set to empty
-        		$_POST[ $field_id ] = array();
-        	if ( 'dropdown' == $data['type'] && isset( $data['multiple'] ) && true == $data['multiple'] && !isset( $_POST[ $field_id ] ) )
-        		// none selected. set to empty
-        		$_POST[ $field_id ] = array();
-        }
-
-        // let's keep the fields in order, shall we?
-        ksort( $_POST, SORT_NATURAL );
-
         foreach ( $_POST as $key => $value )
         {
             $headers[] = $this->fields[$key]['fieldName'];
@@ -150,7 +136,6 @@ class Cascade_Server
         // It doesnt' exist. Let's create it!
         else
         {
-        	die('creating');
             $file = array(
                 'siteName'          => $this->save['site'],
                 'text'              => $this->process_data_to_save(),
