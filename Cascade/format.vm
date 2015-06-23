@@ -14,7 +14,7 @@
 #end
 <!--#passthrough-top<?php
 
-require_once 'REPLACE_ME\loader.php';
+require_once 'REPLACE_ME\Forms\loader.php';
 
 #if ( "ldap_auth" == $ajax_action )
 $Form = new \Form\LDAP_Auth();
