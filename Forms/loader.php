@@ -5,4 +5,5 @@ function __autoload( $class_name ) {
     include 'classes' . DIRECTORY_SEPARATOR . $class_name . '.php';
 }
 
-session_start();
+if ( !isset( $_SESSION ) )
+    session_start();

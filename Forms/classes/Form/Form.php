@@ -539,7 +539,7 @@ class Form {
     */
     public function print_styles()
     {
-        echo $this->get_template_part('styles/css', array( 'stylesheet_path' => $this->stylesheet_path ) , true);
+        echo $this->get_template_part('styles/css', array( 'stylesheet_path' => $this->stylesheet_path, 'id' => $this->id ) , true);
     }
     
     /**

@@ -10,15 +10,15 @@ switch( $_POST['ajax_action'] )
         
         if ( isset( $_SESSION['form'] ) )
         {
-            $Form = $_SESSION['form'];
-            $return = $Form->validate_submission();
-        }
+    		$Form = $_SESSION['form'];
+			$return = $Form->validate_submission();
+		}
 
-        break;
+	    break;
 
     case "ldap_auth" :
 
-        if ( !isset( $_POST['username'], $_POST['password'], $_SESSION['form'] ) ) {
+        if ( !isset( $_POST['username'], $_POST['password'], $_SESSION['form']  ) ) {
             $return = '0';
             break;
         }
@@ -26,6 +26,9 @@ switch( $_POST['ajax_action'] )
         $LDAP_Auth = $_SESSION['form'];
 
         $return = $LDAP_Auth->authorize() ? json_encode( $LDAP_Auth->ldap_auth['success'] ) : '3';
+
+        if ( '3' !== $return )
+            $_SESSION['ldap_authed'] = true;
 
         break;
 }

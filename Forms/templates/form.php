@@ -10,3 +10,6 @@
         </div>
     </div>
 </form>
+<noscript>
+    This page requires javascript.
+</noscript>

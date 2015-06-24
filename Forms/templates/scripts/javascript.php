@@ -12,6 +12,10 @@
 
 <!-- Local Script -->
 <script>
+
+if ( $('#<?php echo $id; ?>') instanceof jQuery )
+    $('#<?php echo $id; ?>').show();
+
 jQuery(document).ready(function($){
 
     // Much of this could be removed if we don't need to load the form in an iFrame. The overlay html and css could be moved.
@@ -81,7 +85,7 @@ jQuery(document).ready(function($){
 
         $.ajax({
             type: "POST",
-        	url: "<?php echo REL_PATH; ?>/ajax.php",
+            url: "<?php echo REL_PATH; ?>/ajax.php",
 			data: fields,
             async: true,
 			success: function(response){
