@@ -35,8 +35,12 @@ $Form->options = array(
     *         'memberOf=CN=,OU=,OU=',
     *     ),
     *     'success'     => array(
-    *         'action'  => 'Redirect',
-    *         'data'    => 'http://www.domain.com'
+    *         'action'      => 'Redirect',
+    *         'data'        => 'http://www.domain.com',
+    *         'set_session' => array(
+    *           'key' => 'authorized',
+    *           'value' => true
+    *          )
     *     )
     * ),
     */

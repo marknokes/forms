@@ -76,29 +76,18 @@ class LDAP_auth extends Form
 	*
 	* @param array $search An array of AD distinguished names to search. Ex: memberOf=CN=Group,OU=Organizational Unit,OU=Organizational Unit,OU=Organizational Unit
 	*/
-	public function __construct()
+	public function __construct( $options, $fields )
 	{
-	}
+		parent::__construct( $options, $fields );
 
-	/**
-    * Populate our object vars
-    *
-    * @return null
-    */
-    public function init()
-    {
-    	parent::init();
-    	
-        $this->ldap_auth = $this->options['ldap_auth'];
+		$this->ldap_auth = $options['ldap_auth'];
 
         foreach( $this->ldap_auth as $key => $value )
 			$this->$key = $value;
 
         // For calling authorize() in object context from our ajax.php file.
         $_SESSION['form'] = $this;
-
-        return null;
-    }
+	}
 
 	/**
 	* Create the LDAP connection

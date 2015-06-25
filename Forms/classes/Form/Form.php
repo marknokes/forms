@@ -24,6 +24,12 @@ namespace Form;
 class Form {
 
     /**
+    * The form object instance
+    * @var object
+    */
+    public static $_instance;
+
+    /**
     * An array which will contain the form fields and their related options
     * @var array
     */
@@ -146,27 +152,31 @@ class Form {
     /**
     * Create a configured instance to use the UCO_Form class.
     *
-    * @param array $form An array of form data including fields and options.
+    * @param array $options An array of form options.
+    * @param array $fields An array of form fields.
     */
-    public function __construct()
+    public function __construct( $options, $fields )
     {
-    }
-
-    /**
-    * Populate our object vars
-    *
-    * @return null
-    */
-    public function init()
-    {
-        foreach( $this->options as $key => $value )
+        foreach( $options as $key => $value )
             $this->$key = $value;
+
+        $this->fields = $fields;
 
         $this->set_email_vars();
         // For calling validate_submission() in object context from our ajax.php file.
         $_SESSION['form'] = $this;
+    }
 
-        return null;
+    /**
+    * Get a configured instance to use the UCO_Form class.
+    */
+    public static function get_instance()
+    {
+        if ( isset( $_SESSION['form'] ) )
+            self::$_instance = $_SESSION['form'];
+        elseif ( !( self::$_instance instanceof self ) )
+            self::$_instance = new self();
+        return self::$_instance;
     }
 
     /**
