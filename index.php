@@ -2,14 +2,7 @@
     
 require_once 'Forms/loader.php';
 
-$Form = new \Form\Form();
-
-/**
-*  Use this for an LDAP auth form
-*  $Form = new \Form\LDAP_Auth();
-*/
-
-$Form->options = array(
+$options = array(
     'tmp_dir'               => 'C:\\tmp\\', // required for sending email attachments. default is C:\tmp\
     'id'                    => 'form-css-id', // required. default is form-css-id
     'email'                 => true, // optional. default is true
@@ -63,7 +56,7 @@ $Form->options = array(
     */
 );
 
-$Form->fields = array(
+$fields = array(
 
     'ajax_action' => array( // required. value is either process_form or ldap_auth
         'fieldName'     => 'ajax_action',
@@ -173,7 +166,13 @@ $Form->fields = array(
     )
 );
 
-$Form->init();
+$Form = new \Form\Form( $options, $fields );
+
+/**
+*  Use this for an LDAP auth form
+*  $Form = new \Form\LDAP_Auth( $options, $fields );
+*/
+
 ?>
 
 <html>
