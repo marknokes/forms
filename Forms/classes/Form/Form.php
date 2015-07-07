@@ -33,13 +33,7 @@ class Form {
     * An array which will contain the form fields and their related options
     * @var array
     */
-    public $fields = array();
-
-    /**
-    * An array which will contain the form options
-    * @var array
-    */
-    public $options = array();
+    protected $fields = array();
     
     /**
     * Temporary directory for email file attachment creation
