@@ -69,7 +69,7 @@ class LDAP_auth extends Form
 	* An array of AD distinguished names to search. Ex: memberOf=CN=Group,OU=Organizational Unit,OU=Organizational Unit,OU=Organizational Unit
 	* @var array
 	*/
-	public $search = array();
+	private $search = array();
 
 	/*
 	* Create a configured instance to use the LDAP_Auth class.
