@@ -80,9 +80,7 @@ class LDAP_auth extends Form
 	{
 		parent::__construct( $options, $fields );
 
-		$this->ldap_auth = $options['ldap_auth'];
-
-        foreach( $this->ldap_auth as $key => $value )
+        foreach( $options['ldap_auth'] as $key => $value )
 			$this->$key = $value;
 
         // For calling authorize() in object context from our ajax.php file.
