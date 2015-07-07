@@ -16,7 +16,7 @@ switch( $_POST['ajax_action'] )
 
     case "ldap_auth" :
 
-        if ( !isset( $_POST['username'], $_POST['password'], $_SESSION['form']  ) ) {
+        if ( !isset( $_POST['username'], $_POST['password'], $Form  ) ) {
             $return = '0';
             break;
         }
