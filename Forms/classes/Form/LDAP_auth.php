@@ -23,11 +23,17 @@ namespace Form;
 
 class LDAP_auth extends Form
 {
-	/**
+    /**
 	* The username to be authenticated
 	* @var string
 	*/
     private $username = '';
+
+    /**
+    * Suffix to be appended to usernames during authentication
+    * @var string
+    */
+    public $suffix = '';
 
 	/**
 	* The password to be authenticated
@@ -46,18 +52,6 @@ class LDAP_auth extends Form
 	* @var string
 	*/
 	private $base_dn = '';
-
-	/**
-	* The primary AD user distinguished name
-	* @var string
-	*/
-	private $ldap_user = '';
-
-	/**
-	* The primary AD user password
-	* @var string
-	*/
-	private $ldap_pass = '';
 
 	/**
 	* LDAP link identifier
@@ -182,7 +176,7 @@ class LDAP_auth extends Form
 		array_walk( $search, array( $this, 'sanatize_str' ) );
 
 		foreach( $search as $data )
-			$str .= '('. $data .')';
+			$str .= '(memberOf='. $data .')';
 
 		$str .= $search_multiple_groups ? '))' : ')';
 
@@ -200,24 +194,7 @@ class LDAP_auth extends Form
 
         $info = @ldap_get_entries( $this->ldap, $result );
 
-        return $info["count"] > 0 ? $info : false;
-	}
-
-	/**
-	* Retrieve the authorization status
-	*
-	* @param array $info User info retrieved from AD.
-	* @return bool TRUE on successful binding FALSE on failure.
-	*/
-	private function auth_status( $info )
-	{
-		for ( $i = 0; $i < $info["count"]; $i += 1 )
-        {
-            if( $info['count'] > 1 )
-                break;
-             
-             return $this->ldap_bind( $info[$i]['dn'] , $this->password );
-        }
+        return $info["count"] > 0;
 	}
 
 	/**
@@ -231,24 +208,26 @@ class LDAP_auth extends Form
 	*/
 	public function authorize()
     {
+    	$this->username = isset( $_POST['username'] ) ? $_POST['username'] : false;
+
+		$this->password = isset( $_POST['password'] ) ? $_POST['password'] : false;
+
 		$this->ldap = $this->ldap_connect();
 		
 		$this->ldap_set_opts();
 		
-		if ( empty( $_POST['username'] ) || empty( $_POST['password'] ) || false === $this->ldap_bind( $this->ldap_user, $this->ldap_pass ) )
+		if ( false === $this->username || false === $this->password )
+		{
+			$this->ldap_close();
 			return false;
+		}
 
-		$auth_status = false;
+		$bind_success = $this->ldap_bind( $this->username . $this->suffix, $this->password );
 
-		$this->username = $_POST['username'];
-
-		$this->password = $_POST['password'];
-
-		if ( $info = $this->ldap_do_search() )
-        	$auth_status = $this->auth_status( $info );
+		$in_groups = $this->ldap_do_search();
 
         $this->ldap_close();
 
-        return $auth_status;
+        return $bind_success && $in_groups;
 	}
 }
