@@ -56,8 +56,7 @@ $Form->options = array(
         'ldap_auth' => array(
             'ad_server' => 'REPLACE_ME',
             'base_dn' => 'REPLACE_ME',
-            'ldap_user' => 'REPLACE_ME',
-            'ldap_pass' => 'REPLACE_ME',
+            'suffix' => 'REPLACE_ME',
             'search' => array(
                 #foreach ( $group in $adGroups )
                     '$group.value',
