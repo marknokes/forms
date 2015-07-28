@@ -33,7 +33,7 @@ class LDAP_auth extends Form
     * Suffix to be appended to usernames during authentication
     * @var string
     */
-    public $suffix = '';
+    private $suffix = '';
 
 	/**
 	* The password to be authenticated
@@ -68,7 +68,7 @@ class LDAP_auth extends Form
 	/*
 	* Create a configured instance to use the LDAP_Auth class.
 	*
-	* @param array $search An array of AD distinguished names to search. Ex: memberOf=CN=Group,OU=Organizational Unit,OU=Organizational Unit,OU=Organizational Unit
+	* @param array $search An array of AD distinguished names to search. Ex: CN=Group,OU=Organizational Unit,OU=Organizational Unit,OU=Organizational Unit
 	*/
 	public function __construct( $options, $fields )
 	{
