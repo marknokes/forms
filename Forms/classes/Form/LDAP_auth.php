@@ -30,7 +30,7 @@ class LDAP_auth extends Form
     private $username = '';
 
     /**
-    * Suffix to be appended to usernames during authentication
+    * Suffix to be appended to usernames during authentication. Ex: @domain.local
     * @var string
     */
     private $suffix = '';
