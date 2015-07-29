@@ -21,9 +21,19 @@ switch( $_POST['ajax_action'] )
             break;
         }
 
-        $return = $Form->authorize() ? json_encode( $Form->ldap_auth['success'] ) : '3';
+        $response = $Form->authorize();
 
-        if ( '3' !== $return && isset( $Form->ldap_auth['success']['set_session'],
+        if ( true === $response )
+            // success action
+            $return = json_encode( $Form->ldap_auth['success'] );
+        elseif ( false === $response )
+            // Incorrect username or password
+            $return = '3';
+        elseif ( '0' === $response )
+            // There was an unexpected error (can't connect to LDAP server)
+            $return = '0';
+
+        if ( true === $response && isset( $Form->ldap_auth['success']['set_session'],
             $Form->ldap_auth['success']['set_session']['key'],
             $Form->ldap_auth['success']['set_session']['value']
         ) )

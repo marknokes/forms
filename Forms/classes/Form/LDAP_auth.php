@@ -24,7 +24,7 @@ namespace Form;
 class LDAP_auth extends Form
 {
     /**
-	* The username to be authenticated
+    * The username to be authenticated
 	* @var string
 	*/
     private $username = '';
@@ -35,8 +35,8 @@ class LDAP_auth extends Form
     */
     private $suffix = '';
 
-	/**
-	* The password to be authenticated
+    /**
+    * The password to be authenticated
 	* @var string
 	*/
     private $password = '';
@@ -88,7 +88,7 @@ class LDAP_auth extends Form
 	*/
 	private function ldap_connect()
 	{
-		$connection = ldap_connect( $this->ad_server ) or die( "Could not connect to LDAP server." );
+		$connection = ldap_connect( $this->ad_server );
 
 		return $connection;
 	}
@@ -112,9 +112,9 @@ class LDAP_auth extends Form
 	* @param string $password The password.
 	* @return bool Returns TRUE on success or FALSE on failure.
 	*/
-	private function ldap_bind( $username, $pass )
+	private function ldap_bind()
 	{
-		$binding = @ldap_bind( $this->ldap, $username, $pass );
+		$binding = @ldap_bind( $this->ldap, $this->username . $this->suffix, $this->password );
 
 		return $binding;
 	}
@@ -162,23 +162,25 @@ class LDAP_auth extends Form
 	*/
 	private function ldap_build_search_string()
 	{
+		// Store search in separate array to avoid issues with iterating over $this->search in array_walk below
 		$search = $this->search;
 
+		// At least one AD group is required
 		if ( sizeof( $this->search ) === 0 )
 			return false;
 
-		$search_multiple_groups = sizeof( $this->search ) !== 1;
+		$search_multiple = sizeof( $this->search ) !== 1;
 
 		$str = '(&(sAMAccountName=' . $this->username;
 
-		$search_multiple_groups ? $str .= ')(|' : $str.= ')';
+		$str .= $search_multiple ? ')(|' : ')';
 
 		array_walk( $search, array( $this, 'sanatize_str' ) );
 
 		foreach( $search as $data )
 			$str .= '(memberOf='. $data .')';
 
-		$str .= $search_multiple_groups ? '))' : ')';
+		$str .= $search_multiple ? '))' : ')';
 
 		return $str;
 	}
@@ -186,7 +188,7 @@ class LDAP_auth extends Form
 	/**
 	* Perform the LDAP search
 	*
-	* @return array|false If the search contains results an array of results otherwise false.
+	* @return bool If the search contains results true otherwise false.
 	*/
 	private function ldap_do_search()
 	{
@@ -202,27 +204,25 @@ class LDAP_auth extends Form
 	* instantiated. It will return a boolean based on whether the user is in the search
 	* group(s) and enters the correct password.
 	*
-	* @param string $username Username. Probably posted from a form, but not necessarily.
-	* @param string $password Password. Probably posted from a form, but not necessarily.
-	* @return bool TRUE on successful binding FALSE on failure.
+	* @return bool|string TRUE on successful binding FALSE on failure. '0' if unable to connect to ad server
 	*/
 	public function authorize()
     {
-    	$this->username = isset( $_POST['username'] ) ? $_POST['username'] : false;
+    	if ( !isset( $_POST['username'], $_POST['password'] ) )
+    		return false;
 
-		$this->password = isset( $_POST['password'] ) ? $_POST['password'] : false;
+    	$this->username = $_POST['username'];
+
+    	$this->password = $_POST['password'];
 
 		$this->ldap = $this->ldap_connect();
+
+		if ( false === $this->ldap )
+			return '0';
 		
 		$this->ldap_set_opts();
-		
-		if ( false === $this->username || false === $this->password )
-		{
-			$this->ldap_close();
-			return false;
-		}
 
-		$bind_success = $this->ldap_bind( $this->username . $this->suffix, $this->password );
+		$bind_success = $this->ldap_bind();
 
 		$in_groups = $this->ldap_do_search();
 
