@@ -191,7 +191,7 @@ class Form {
                 // We aren't going to send the email attachement to multiple email addresses, although we certainly could.
                 $this->send_email_attachment = !empty( $field['send_email_attachment'] ) && $field['cloneable'] !== true ? $key : false;
 
-                $this->from = !empty( $field['replyTo'] ) ? $key : $this->$default_from;
+                $this->from = !empty( $field['replyTo'] ) ? $key : $this->default_from;
             }
         }
 
