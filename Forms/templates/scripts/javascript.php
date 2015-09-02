@@ -19,8 +19,14 @@ if ( $('#<?php echo $id; ?>') instanceof jQuery )
 jQuery(document).ready(function($){
 
     // Much of this could be removed if we don't need to load the form in an iFrame. The overlay html and css could be moved.
-    var parentBody = window.parent.document.body,
-        $form = $('#<?php echo $id; ?>'),
+    var parentBody;
+    try {
+        parentBody = window.parent.document.body;
+    }
+    catch(err) {
+        parentBody = '';
+    }
+    var $form = $('#<?php echo $id; ?>'),
         formHeight = $form.outerHeight(true),
         formWidth = $form.outerWidth(true),
         $overlay = $('<div id="form-submit-overlay"></div>'),
@@ -28,7 +34,8 @@ jQuery(document).ready(function($){
         $loaderImg = $('<img/>'),
         // Set up iFrame resize on form submission to allow for height of errors, etc.
         resizeFrame = function(){
-            $("#form-frame", parentBody).height($form.outerHeight(true) + 10);
+            if ( '' !== parentBody )
+                $("#form-frame", parentBody).height($form.outerHeight(true) + 10);
         };
     
     // Need to resize on document ready. setTimeout is to allow time for the reCaptcha widget to load.
@@ -64,7 +71,9 @@ jQuery(document).ready(function($){
     });
     $span.html("Processing... Please wait.").append( $loaderImg );
     $overlay.html( $span );
-    $(parentBody).append( $overlay ).css('position', 'relative');
+    
+    if ( '' !== parentBody )
+        $(parentBody).append( $overlay ).css('position', 'relative');
 
     // Process form submission
     $form.submit(function(e){
@@ -86,9 +95,9 @@ jQuery(document).ready(function($){
         $.ajax({
             type: "POST",
             url: "<?php echo REL_PATH; ?>/ajax.php",
-			data: fields,
+            data: fields,
             async: true,
-			success: function(response){
+            success: function(response){
                 var message = '';
                 if (response === 'captcha_error'){
                     if (typeof(grecaptcha) !== 'undefined'){
@@ -101,9 +110,9 @@ jQuery(document).ready(function($){
                     if (typeof(grecaptcha) !== 'undefined'){
                         grecaptcha.reset();
                     }
-					$form[0].reset();
-					message = '<div class="alert alert-success">Your message was sent successfully.</div>';
-				} else if (response === '2') {
+                    $form[0].reset();
+                    message = '<div class="alert alert-success">Your message was sent successfully.</div>';
+                } else if (response === '2') {
                     message = '<div class="alert alert-danger">Please enter a valid email address.</div>';
                     var $element = $('input[type=email]'),
                         $formControl = $element.parents('.form-group');
@@ -114,16 +123,16 @@ jQuery(document).ready(function($){
                 } else if (JSON.parse(response).action === 'Redirect') {
                     window.parent.location = JSON.parse(response).data;
                 } else {
-					var required_fields = JSON.parse(response),
+                    var required_fields = JSON.parse(response),
                         list = '<ol>';
-					$.each(required_fields, function(index, value){
-						var $element = $('#' + value),
+                    $.each(required_fields, function(index, value){
+                        var $element = $('#' + value),
                             $label = $element.parents().prev('label'),
                             $formControl = $element.parents('.form-group'),
                             $legend = $element.is('legend') ? $element : false,
                             text = '';
                         $element.attr('aria-invalid', true);
-						$formControl.addClass('has-error');
+                        $formControl.addClass('has-error');
                         if ( false !== $legend ){
                             $legend.addClass('has-error');
                             text = $legend.text();
@@ -131,18 +140,18 @@ jQuery(document).ready(function($){
                             text = $label.text();
                         }
                         list += '<li>' + text.replace("\*", "") + '</li>';
-					});
+                    });
                     
                     list += '</ol>';
                     
-					message = '<div class="alert alert-danger"><p>Please complete the required fields.</p> ' + list + ' <p>The respective fields have been marked with an asterisk (*) in the form below.</p></div>';
-				}
+                    message = '<div class="alert alert-danger"><p>Please complete the required fields.</p> ' + list + ' <p>The respective fields have been marked with an asterisk (*) in the form below.</p></div>';
+                }
                 $messageContainer.html(message).css('margin-top', '15px');
                 resizeFrame();
                 $overlay.css('visibility', 'hidden');
                 $messageContainer.focus();
-			}
-    	});
+            }
+        });
     });
     
     // Additional plugin initialization 
