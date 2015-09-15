@@ -11,7 +11,7 @@
 <script type="text/javascript" src="<?php echo REL_PATH; ?>/_lib/cloneable/jquery-cloneable.min.js"></script>
 
 <!-- Signature Pad -->
-<script type="text/javascript" src="<?php echo REL_PATH; ?>/_lib/signature-pad/signature_pad.js"></script>
+<script type="text/javascript" src="<?php echo REL_PATH; ?>/_lib/signature-pad/signature_pad.min.js"></script>
 
 <!-- Local Script -->
 <script>
