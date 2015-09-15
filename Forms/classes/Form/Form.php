@@ -364,6 +364,7 @@ class Form {
             else
                 $data = $data;
 
+            // Signature Pad
             if ( false !== strpos( $data, "base64" ) )
             {
                 $html .= "<tr>
@@ -373,8 +374,8 @@ class Form {
                             </td>
                         </tr>";
             }
-            else {
-
+            else
+            {
                 $html .= "<tr>
                             <td style='border: 1px solid #999; padding: 4px;'>" . $this->fields[$key]['fieldName']  . "</td>
                             <td style='border: 1px solid #999; padding: 4px;'>" . nl2br( $data ) . "</td>
