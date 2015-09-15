@@ -364,10 +364,23 @@ class Form {
             else
                 $data = $data;
 
-            $html .= "<tr>
-                                <td style='border: 1px solid #999; padding: 4px;'>" . $this->fields[$key]['fieldName']  . "</td>
-                                <td style='border: 1px solid #999; padding: 4px;'>" . nl2br( $data ) . "</td>
-                            </tr>";
+            if ( false !== strpos( $data, "base64" ) )
+            {
+                $html .= "<tr>
+                            <td style='border: 1px solid #999; padding: 4px;'>" . $this->fields[$key]['fieldName']  . "</td>
+                            <td style='border: 1px solid #999; padding: 4px;'>
+                                <img style='max-width: 400px !important; height: auto !important;' src='". str_replace( " ", "%2B", urldecode( $data ) ) ."' />
+                            </td>
+                        </tr>";
+            }
+            else {
+
+                $html .= "<tr>
+                            <td style='border: 1px solid #999; padding: 4px;'>" . $this->fields[$key]['fieldName']  . "</td>
+                            <td style='border: 1px solid #999; padding: 4px;'>" . nl2br( $data ) . "</td>
+                        </tr>";
+            }
+
             $text .= $this->fields[$key]['fieldName'] . ": " . $data . PHP_EOL;
         }
 
@@ -396,7 +409,7 @@ class Form {
             'Reply-To: '. $from . PHP_EOL .
             'X-Mailer: PHP/' . phpversion() . PHP_EOL .
             'MIME-Version: 1.0' . PHP_EOL .
-            'Content-type: text/html; charset=iso-8859-1';
+            'Content-type: text/html; charset=UTF-8';
 
         $msg_vars = array(
             'subject' => $this->subject,

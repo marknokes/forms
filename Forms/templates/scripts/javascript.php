@@ -10,6 +10,9 @@
 <!-- Cloneable -->
 <script type="text/javascript" src="<?php echo REL_PATH; ?>/_lib/cloneable/jquery-cloneable.min.js"></script>
 
+<!-- Signature Pad -->
+<script type="text/javascript" src="<?php echo REL_PATH; ?>/_lib/signature-pad/signature_pad.js"></script>
+
 <!-- Local Script -->
 <script>
 
@@ -17,6 +20,45 @@ if ( $('#<?php echo $id; ?>') instanceof jQuery )
     $('#<?php echo $id; ?>').show();
 
 jQuery(document).ready(function($){
+
+    // Signature Pad
+    var pads = {};
+
+    $('.m-signature-pad').each(function(index,value){
+        var id = $(value).attr('id'),
+            wrapper = document.getElementById(id),
+            clearButton = wrapper.querySelector("[data-action=clear]"),
+            canvas = wrapper.querySelector("canvas"),
+            signaturePadId = id.replace(/\-/g, "_");
+
+        // Adjust canvas coordinate space taking into account pixel ratio,
+        // to make it look crisp on mobile devices.
+        // This also causes canvas to be cleared.
+        function resizeCanvas() {
+            // When zoomed out to less than 100%, for some very strange reason,
+            // some browsers report devicePixelRatio as less than 1
+            // and only part of the canvas is cleared then.
+            var ratio =  Math.max(window.devicePixelRatio || 1, 1);
+            canvas.width = canvas.offsetWidth * ratio;
+            canvas.height = canvas.offsetHeight * ratio;
+            canvas.getContext("2d").scale(ratio, ratio);
+        }
+
+        window.onresize = resizeCanvas;
+        resizeCanvas();
+
+        signaturePadId = new SignaturePad(canvas, {
+           backgroundColor: "rgb(255,255,255)"
+        });
+
+        clearButton.addEventListener("click", function (event) {
+            event.preventDefault();
+            signaturePadId.clear();
+        });
+
+        pads[id] = signaturePadId;
+    });
+    // END Signature Pad
 
     // Much of this could be removed if we don't need to load the form in an iFrame. The overlay html and css could be moved.
     var parentBody;
@@ -77,7 +119,16 @@ jQuery(document).ready(function($){
 
     // Process form submission
     $form.submit(function(e){
+
         e.preventDefault();
+
+        // Signature pad
+        $('.m-signature-pad').each(function(index,value){
+            var pid = $(value).attr('id');
+            if ( !pads[pid]._isEmpty )
+                $("#" + pid + " input").val(pads[pid].toDataURL("image/jpeg", 0.7));
+        });
+        // END Signature pad
 
         var scrollTop = $(parentBody).scrollTop(),
             $overlay = $(parentBody).find('#form-submit-overlay'),

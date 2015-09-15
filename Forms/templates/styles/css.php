@@ -2,6 +2,8 @@
         
 <link rel="stylesheet" type="text/css" href="<?php echo REL_PATH; ?>/_lib/timepicker/jquery.timepicker.css" />
 
+<link rel="stylesheet" type="text/css" href="<?php echo REL_PATH; ?>/_lib/signature-pad/signature-pad.css" />
+
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
 
 <style>
