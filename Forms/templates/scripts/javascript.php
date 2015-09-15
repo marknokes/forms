@@ -162,6 +162,13 @@ jQuery(document).ready(function($){
                         grecaptcha.reset();
                     }
                     $form[0].reset();
+                    
+                    for (i in pads) {
+                        if (pads.hasOwnProperty(i)) {
+                          pads[i].clear();
+                        }
+                    }
+
                     message = '<div class="alert alert-success">Your message was sent successfully.</div>';
                 } else if (response === '2') {
                     message = '<div class="alert alert-danger">Please enter a valid email address.</div>';
