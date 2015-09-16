@@ -169,7 +169,7 @@ class Form {
         if ( isset( $_SESSION['form'] ) )
             self::$_instance = $_SESSION['form'];
         elseif ( !( self::$_instance instanceof self ) )
-            self::$_instance = new self();
+            throw new \Exception('The session has expired. Refresh the page to try again.');
         return self::$_instance;
     }
 
@@ -441,10 +441,10 @@ class Form {
                 if ( $resp->isSuccess() )
                     $_SESSION['recaptcha_correct'] = true;
                 else
-                    return 'captcha_error';
+                    return -1;
             }
             else
-                return 'captcha_error';
+                return -1;
         }
         
         // field validation
