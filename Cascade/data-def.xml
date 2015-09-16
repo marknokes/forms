@@ -36,11 +36,12 @@
         <dropdown-item value="Checkbox(s)" show-fields="fields/field/required, fields/field/checkbox-values"/>
         <dropdown-item value="Radio Buttons" show-fields="fields/field/radio-values"/>
         <dropdown-item value="Message" show-fields="fields/field/message"/>
-        <dropdown-item value="Datepicker" show-fields="fields/field/datepicker, fields/field/required"/>
-        <dropdown-item value="Timepicker" show-fields="fields/field/timepicker, fields/field/required"/>
+        <dropdown-item value="Datepicker" show-fields="fields/field/required"/>
+        <dropdown-item value="Timepicker" show-fields="fields/field/required"/>
         <dropdown-item value="Dropdown" show-fields="fields/field/dropdown-values, fields/field/required, fields/field/multiple-select"/>
         <dropdown-item value="Password"/>
         <dropdown-item value="Username"/>
+        <dropdown-item value="Signature" show-fields="fields/field/required"/>
       </text>
       <text type="checkbox" identifier="cloneable" label="Cloneable">
         <checkbox-item value="Yes"/>
@@ -61,8 +62,6 @@
         <checkbox-item value="Yes"/>
       </text>
       <text wysiwyg="true" identifier="message" label="Message"/>
-      <text identifier="datepicker" label="Datepicker" default="Placeholder. No value required." size="25"/>
-      <text identifier="timepicker" label="Timepicker" default="Placeholder. No value required." size="25"/>
     </group>
   </group>
 </system-data-structure>

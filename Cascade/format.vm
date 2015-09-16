@@ -189,6 +189,14 @@ $Form->fields = array(
         'required' => $required
     ),
 #end
+## Signature
+#if ( "Signature" == $fieldType )
+    'field-${i}' => array(
+        'fieldName' => '${fieldName}',
+        'type' => 'signature-pad',
+        'required' => $required
+    ),
+#end
 ## Textarea
 #if ( "Textarea" == $fieldType )
     'field-${i}' => array(
