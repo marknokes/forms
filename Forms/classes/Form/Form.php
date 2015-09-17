@@ -184,16 +184,22 @@ class Form {
     */
     private function set_email_vars()
     {
+        $default_from = !empty( $this->default_from ) && !empty( $this->default_from_name ) ? $this->default_from_name . " <" . $this->default_from . ">" : "Unknown Sender <unknown@domain.com>";
+
         foreach( $this->fields as $key => $field )
         {
             if ( "email" === $field['type'] )
             {   
                 // We aren't going to send the email attachement to multiple email addresses, although we certainly could.
-                $this->send_email_attachment = !empty( $field['send_email_attachment'] ) && $field['cloneable'] !== true ? $key : false;
+                $this->send_email_attachment = !empty( $field['sendAttachment'] ) && $field['cloneable'] !== true ? $key : false;
 
-                $this->from = !empty( $field['replyTo'] ) ? $key : $this->default_from;
+                $this->from = !empty( $field['replyTo'] ) ? $key : $default_from;
             }
         }
+
+        // If there's no email field $_POST[ $key ] will be unset. The default should be from the options array or from above (Unknown Sender).
+        if ( empty( $this->from ) )
+            $this->from = $default_from;
 
         return;
     }
@@ -304,7 +310,7 @@ class Form {
         $from = $this->default_from_name . "<" . $this->default_from . ">";
         $subject = "Form generated email";
         $message = "";
-        $message_body = "Please print, sign, and deliver the attachment to the Service Desk.";
+        $message_body = "Please keep the attached document for your records.";
         $file_size = filesize( $file );
         $handle = fopen( $file, "r" );
         $content = fread( $handle, $file_size );
@@ -365,7 +371,9 @@ class Form {
                 $data = $data;
 
             // Signature Pad
-            if ( false !== strpos( $data, "base64" ) )
+            $is_base_64 = false !== strpos( $data, "base64" );
+            
+            if ( $is_base_64 )
             {
                 $html .= "<tr>
                             <td style='border: 1px solid #999; padding: 4px;'>" . $this->fields[$key]['fieldName']  . "</td>
@@ -382,14 +390,13 @@ class Form {
                         </tr>";
             }
 
-            $text .= $this->fields[$key]['fieldName'] . ": " . $data . PHP_EOL;
+            if ( $is_base_64 )
+                $text .= $this->fields[$key]['fieldName'] . ": " . str_replace( " ", "%2B", urldecode( $data ) ) . PHP_EOL;
+            else
+                $text .= $this->fields[$key]['fieldName'] . ": " . $data . PHP_EOL;
         }
 
         $html .= "</table>";
-
-        $text .= PHP_EOL . "Date: _____________________________________________________" . PHP_EOL;
-        $text .= PHP_EOL . "Signature: _____________________________________________________" . PHP_EOL;
-        $text .= PHP_EOL . "Supervisor Signature: _____________________________________________________" . PHP_EOL;
 
         $this->message_content = array(
             "html" => $html,
