@@ -23,10 +23,13 @@ $Form = new \Form\Form();
 #end
 
 $Form->options = array(
+    'tmp_dir' => 'C:\\tmp\\', // Required for sending email attachment to form submitter
     'id' => '$formID',
     #if( "Yes" == $formDetails.getChild("email-results").value )
     'email' => true,
     'to' => '$formDetails.getChild("email-to").value',
+    'default_from' => 'address@domain.com',
+    'default_from_name' => 'Default Name',
     'subject' => '$formDetails.getChild("email-subject").value',
     #end
     #if( "Yes" == $formDetails.getChild("save-results").value )
