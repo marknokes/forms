@@ -38,7 +38,8 @@
     }
     .uco-form-submit-container,
     .g-recaptcha {
-    	padding-left: 15px;
+    	padding: 0 15px;
+        float: right;
     }
 
 </style>

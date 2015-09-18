@@ -16,22 +16,68 @@
 <!-- Local Script -->
 <script>
 
+// A quick way to be sure javascript is enabled
 if ( $('#<?php echo $id; ?>') instanceof jQuery )
     $('#<?php echo $id; ?>').show();
 
+// onload callback is set in the recaptcha script src
+var recaptchaReady = function() {
+    var recaptcha = document.getElementById('recaptcha');
+    grecaptcha.render('recaptcha', {
+      'sitekey' : recaptcha.dataset.sitekey
+    });
+};
+
 jQuery(document).ready(function($){
 
-    // Signature Pad
-    var signaturePads = [];
+    // Much of this could be removed if we don't need to load the form in an iFrame. The overlay html and css could be moved.
+    var parentBody;
 
-    // Adjust canvas coordinate space, taking into account pixel ratio, to make it look crisp on mobile devices.
-    function resizeCanvas(canvas) {
-        var ratio =  Math.max(window.devicePixelRatio || 1, 1);
-        canvas.width = canvas.offsetWidth * ratio;
-        canvas.height = canvas.offsetHeight * ratio;
-        canvas.getContext("2d").scale(ratio, ratio);
+    try {
+        parentBody = window.parent.document.body;
+    } catch(err) {
+        parentBody = '';
     }
 
+    var $form = $('#<?php echo $id; ?>'),
+        formHeight = $form.outerHeight(true),
+        formWidth = $form.outerWidth(true),
+        $overlay = $('<div id="form-submit-overlay"></div>'),
+        $span = $('<span></span>'),
+        $loaderImg = $('<img/>'),
+        // Set up iFrame resize on form submission to allow for height of errors, etc.
+        resizeFrame = function(){
+            if ( '' !== parentBody ) {
+                
+                var additionalHeight = 10, // Just a little padding
+                    currentHeight = $form.outerHeight(true);
+
+                // The recaptcha select box is 600 tall
+                if ($('#recaptcha').size() > 0) {
+                    if ( currentHeight < 600 )
+                        // Get the iframe at least as tall as the recaptcha select box plus a bit of padding
+                        additionalHeight = ( 600 - currentHeight ) + additionalHeight;
+                    else
+                        // Just the height of the captcha box
+                        additionalHeight = 75;
+                }
+
+                $("#form-frame", parentBody).height(currentHeight + additionalHeight);
+            }
+        },
+        resizeCanvas = function(canvas) {
+            // Adjust canvas coordinate space, taking into account pixel ratio, to make it look crisp on mobile devices.
+            var ratio =  Math.max(window.devicePixelRatio || 1, 1);
+            canvas.width = canvas.offsetWidth * ratio;
+            canvas.height = canvas.offsetHeight * ratio;
+            canvas.getContext("2d").scale(ratio, ratio);
+        },
+        signaturePads = [];
+
+    // Call this right away!
+    resizeFrame();
+
+    // Signature Pad
     $('.m-signature-pad').each( function (index,value) {
         var id = $(value).attr('id'),
             $clearButton = $(this).find("[data-action=clear]"),
@@ -56,31 +102,6 @@ jQuery(document).ready(function($){
         signaturePads[id] = signaturePad;
     });
     // END Signature Pad
-
-    // Much of this could be removed if we don't need to load the form in an iFrame. The overlay html and css could be moved.
-    var parentBody;
-    try {
-        parentBody = window.parent.document.body;
-    }
-    catch(err) {
-        parentBody = '';
-    }
-    var $form = $('#<?php echo $id; ?>'),
-        formHeight = $form.outerHeight(true),
-        formWidth = $form.outerWidth(true),
-        $overlay = $('<div id="form-submit-overlay"></div>'),
-        $span = $('<span></span>'),
-        $loaderImg = $('<img/>'),
-        // Set up iFrame resize on form submission to allow for height of errors, etc.
-        resizeFrame = function(){
-            if ( '' !== parentBody )
-                $("#form-frame", parentBody).height($form.outerHeight(true) + 10);
-        };
-    
-    // Need to resize on document ready. setTimeout is to allow time for the reCaptcha widget to load.
-    setTimeout(function(){
-        resizeFrame();
-    }, 400);
 
     // Set up overlay for form submission
     $loaderImg.attr( "src", "<?php echo REL_PATH; ?>/_lib/images/ajax-loader.gif");

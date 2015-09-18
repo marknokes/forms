@@ -459,8 +459,8 @@ class Form {
         
         foreach ( $this->fields as $field_id => $data )
         {
-            // return value should be numeric string or json
-            $return = '0';
+            // return value should be int or json
+            $return = 0;
 
             /**
             * Other field validation may be performed here. Just
@@ -476,12 +476,12 @@ class Form {
                     foreach( $_POST[ $field_id ] as $email_address )
                     {
                         if( false === filter_var( $email_address, FILTER_VALIDATE_EMAIL ) )
-                            return '2';
+                            return 2;
                     }
                 }
                 // single email field
                 elseif( false === filter_var( $_POST[ $field_id ], FILTER_VALIDATE_EMAIL ) )
-                    return '2';
+                    return 2;
             }
             // check required fields
             $is_required = empty( $_POST[ $field_id ] ) && !empty( $data['required'] );
@@ -517,7 +517,7 @@ class Form {
             if ( !empty( $this->email ) && $this->send() )
             {
                 // emailed
-                $return = '1';
+                $return = 1;
             }
             if ( !empty( $this->save['to_save'] ) )
             {
@@ -525,12 +525,12 @@ class Form {
 
                 if ( $cascade->save() )
                     // saved
-                    $return = '1';
+                    $return = 1;
             }
             if ( !empty( $this->send_email_attachment ) && $this->send_form_data_to_user( $this->message_content["text"], $_POST[ $this->send_email_attachment ] ) )
             {
                 // attachment sent
-                $return = '1';
+                $return = 1;
             }
         }
         elseif ( $required )
@@ -577,8 +577,8 @@ class Form {
         $html = '';
         if ( true === $this->recaptcha )
         {
-            $html = '<div class="g-recaptcha" data-sitekey="' . $this->recaptcha_site_key . '"></div>
-            <script type="text/javascript" src="https://www.google.com/recaptcha/api.js?hl=en"></script>';
+            $html = '<div id="recaptcha" class="g-recaptcha" data-sitekey="' . $this->recaptcha_site_key . '"></div>
+            <script type="text/javascript" src="https://www.google.com/recaptcha/api.js?hl=en&onload=recaptchaReady&render=explicit"></script>';
         }
         return $html;
     }
