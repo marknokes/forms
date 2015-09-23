@@ -1,0 +1,19 @@
+## If you wanted to be a super star, you could create all the field templates (without PHP vars) in cascade
+## and render a view of the form in the system-view:internal below. I don't have time to do it right now so
+## if you do, please let me know!
+
+#set ( $page = $_XPathTool.selectSingleNode($contentRoot, "//system-data-structure") )
+
+## Modify this to match your data def
+#set ( $formPath = $page.getChild("form-chooser").getChild("link").value )
+
+#if ( '' != $formPath )
+    [system-view:external]
+    <iframe src="[system-asset]${formPath}[/system-asset]" width="100%" id="form-frame" marginheight="0" frameborder="0" scrolling="no"></iframe>
+    [/system-view:external]
+    [system-view:internal]
+    <br />
+    <strong>FORM PLACEHOLDER. Be sure to preview on staging before publishing live!</strong>
+    <br />
+    [/system-view:internal]
+#end
