@@ -351,6 +351,11 @@ class Form {
         
     }
 
+    private function get_base64_img_src( $data )
+    {
+        return str_replace( " ", "%2B", urldecode( $data ) );
+    }
+
     /**
     * Populate the message_content var to be used in email body and/or attachment
     *
@@ -373,14 +378,16 @@ class Form {
             // Signature Pad
             $is_base_64 = false !== strpos( $data, "base64" );
             
-            if ( $is_base_64 )
+            if ( $is_base_64 && isset( $this->fields[$key] ) )
             {
                 $html .= "<tr>
                             <td style='border: 1px solid #999; padding: 4px;'>" . $this->fields[$key]['fieldName']  . "</td>
                             <td style='border: 1px solid #999; padding: 4px;'>
-                                <img style='max-width: 400px !important; height: auto !important;' src='". str_replace( " ", "%2B", urldecode( $data ) ) ."' />
+                                <img style='max-width: 400px !important; height: auto !important;' src='". $this->get_base64_img_src( $data ) ."' />
                             </td>
                         </tr>";
+
+                $text .= $this->fields[$key]['fieldName'] . ": " . $this->get_base64_img_src( $data ) . PHP_EOL;
             }
             else
             {
@@ -388,12 +395,9 @@ class Form {
                             <td style='border: 1px solid #999; padding: 4px;'>" . $this->fields[$key]['fieldName']  . "</td>
                             <td style='border: 1px solid #999; padding: 4px;'>" . nl2br( $data ) . "</td>
                         </tr>";
-            }
 
-            if ( $is_base_64 )
-                $text .= $this->fields[$key]['fieldName'] . ": " . str_replace( " ", "%2B", urldecode( $data ) ) . PHP_EOL;
-            else
                 $text .= $this->fields[$key]['fieldName'] . ": " . $data . PHP_EOL;
+            }   
         }
 
         $html .= "</table>";
