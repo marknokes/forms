@@ -1,5 +1,8 @@
-# php-forms
-Form builder: Supports LDAP Authentication, Cascade Server web services, and Google ReCaptcha. Uses twitter bootstrap.
+# PHP Form Builder
+
+PHP >= 5.6.8. Tested successfully in PHP 7.
+
+Supports LDAP Authentication, Cascade Server web services, and Google ReCaptcha. Uses twitter bootstrap.
 
 See index.php for options and usage.
 
