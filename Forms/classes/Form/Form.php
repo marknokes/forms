@@ -502,19 +502,19 @@ class Form {
                 $_POST[ $field_id ] = array();
             if ( 'dropdown' == $data['type'] && isset( $data['multiple'] ) && true == $data['multiple'] && !isset( $_POST[ $field_id ] ) )
                 $_POST[ $field_id ] = array();
-
-            // let's keep the fields in order, shall we?
-            ksort( $_POST, SORT_NATURAL );
         }
-        
-        // we don't want to email these!
-        unset(
-            $_POST['ajax_action'],
-            $_POST['g-recaptcha-response']
-        );
+
+        // let's keep the fields in order, shall we?
+        ksort( $_POST, SORT_NATURAL );
         
         if ( sizeof( $required ) === 0 )
         {
+            // we don't want to email these!
+            unset(
+                $_POST['ajax_action'],
+                $_POST['g-recaptcha-response']
+            );
+
             // Set html and text content for email(s)
             $this->set_message_content();
 
@@ -540,7 +540,7 @@ class Form {
         elseif ( $required )
             $return = json_encode( $required );
 
-        if ( '1' === $return )
+        if ( 1 === $return )
         {
             // unset all $_SESSION variables
             $_SESSION = array();
