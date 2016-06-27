@@ -186,7 +186,7 @@ jQuery(document).ready(function($){
                     for ( id in signaturePads ) {
                         signaturePads[id].clear();
                     }
-                    message = '<div class="alert alert-success">Your message was sent successfully.</div>';
+                    message = '<div class="alert alert-success">Your message was sent successfully. <a href="javascript:void(0)" onclick="location.reload(); return false;">Refresh</a> the page to submit again.</div>';
                 } else if (parsedResponse === 2) {
                     message = '<div class="alert alert-danger">Please enter a valid email address.</div>';
                     var $element = $('input[type=email]'),
