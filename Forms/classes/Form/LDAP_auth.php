@@ -76,9 +76,6 @@ class LDAP_auth extends Form
         
         foreach( $this->ldap_auth as $key => $value )
 			$this->$key = $value;
-
-        // For calling authorize() in object context from our ajax.php file.
-        $_SESSION['form'] = $this;
 	}
 
 	/**
@@ -206,7 +203,7 @@ class LDAP_auth extends Form
 	*
 	* @return bool|string TRUE on successful binding FALSE on failure. '0' if unable to connect to ad server
 	*/
-	public function authorize()
+	private function authorize()
     {
     	if ( !isset( $_POST['username'], $_POST['password'] ) )
     		return false;
@@ -229,5 +226,38 @@ class LDAP_auth extends Form
         $this->ldap_close();
 
         return $bind_success && $in_groups;
+	}
+
+	/**
+	* Overwrites the parent method. Also sets a session variable if one was included in the options.
+	*
+	* @return int The integer is echo'd from ajax.php and is used to select the proper message found in /templates/javascript.php
+	*/
+	public function validate_submission()
+	{
+		if ( !isset( $_POST['username'], $_POST['password'] ) ) {
+            $return = 0;
+            break;
+        }
+
+        $response = $this->authorize();
+
+        if ( true === $response )
+            // success action
+            $return = json_encode( $this->ldap_auth['success'] );
+        elseif ( false === $response )
+            // Incorrect username or password
+            $return = 3;
+        elseif ( '0' === $response )
+            // There was an unexpected error (can't connect to LDAP server)
+            $return = 0;
+
+        if ( true === $response && isset( $this->ldap_auth['success']['set_session'],
+            $this->ldap_auth['success']['set_session']['key'],
+            $this->ldap_auth['success']['set_session']['value']
+        ) )
+            $_SESSION[ $this->ldap_auth['success']['set_session']['key'] ] = $this->ldap_auth['success']['set_session']['value'];
+
+        return $return;
 	}
 }

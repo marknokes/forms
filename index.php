@@ -58,12 +58,6 @@ $options = array(
 
 $fields = array(
 
-    'ajax_action' => array( // required. value is either process_form or ldap_auth
-        'fieldName'     => 'ajax_action',
-        'type'          => 'hidden',
-        'default_value' => 'process_form'
-    ),
-
     /**
     * Use these fields if ajax_action is set to ldap_auth. Right now it only does a redirect, however
     * you may have it save a cookie, set a session var, or something else.
@@ -173,6 +167,8 @@ $fields = array(
 );
 
 $Form = new \Form\Form( $options, $fields );
+
+$Form->set();
 
 /**
 *  Use this for an LDAP auth form

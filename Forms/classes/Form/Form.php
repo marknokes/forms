@@ -154,9 +154,13 @@ class Form {
         foreach( $options as $key => $value )
             $this->$key = $value;
 
-        $this->fields = $fields;
+        $this->fields = array_merge( $this->fields, $fields );
 
         $this->set_email_vars();
+    }
+
+    public function set()
+    {
         // For calling validate_submission() in object context from our ajax.php file.
         $_SESSION['form'] = $this;
     }
@@ -510,10 +514,7 @@ class Form {
         if ( sizeof( $required ) === 0 )
         {
             // we don't want to email these!
-            unset(
-                $_POST['ajax_action'],
-                $_POST['g-recaptcha-response']
-            );
+            unset( $_POST['g-recaptcha-response'] );
 
             // Set html and text content for email(s)
             $this->set_message_content();
