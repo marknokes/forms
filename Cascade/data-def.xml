@@ -1,8 +1,8 @@
 <system-data-structure>
   <group identifier="form-details" label="Form Details">
-    <text type="radiobutton" identifier="ajax_action" label="Ajax Action" default="process_form" required="true">
-      <radio-item value="process_form" show-fields="form-details/use-recaptcha, form-details/email-results, form-details/save-results"/>
-      <radio-item value="ldap_auth" show-fields="ad-groups, form-details/success_action, form-details/success_data"/>
+    <text type="radiobutton" identifier="type" label="Form Type" default="General" required="true">
+      <radio-item value="General" show-fields="form-details/use-recaptcha, form-details/email-results, form-details/save-results"/>
+      <radio-item value="LDAP Login" show-fields="ad-groups, form-details/success_action, form-details/success_data"/>
     </text>
     <text identifier="form-title" label="Form Title" required="true"/>
     <text type="checkbox" identifier="use-recaptcha" label="Use ReCaptcha?">

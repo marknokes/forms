@@ -3,7 +3,7 @@
 [/system-view:internal]
 [system-view:external]
 #set( $formDetails = $_XPathTool.selectSingleNode( $contentRoot, '//form-details' ) )
-#set( $ajax_action = $formDetails.getChild("ajax_action").value )
+#set( $formType = $formDetails.getChild("type").value )
 #set( $fields = $_XPathTool.selectNodes( $contentRoot, '//field' ) )
 #set( $site = $_XPathTool.selectSingleNode( $contentRoot, '//site' ).value )
 #set( $title = $formDetails.getChild("form-title").value )
@@ -14,22 +14,16 @@
 #end
 <!--#passthrough-top<?php
 
-require_once 'REPLACE_ME\Forms\loader.php';
+require_once 'Forms\loader.php';
 
-#if ( "ldap_auth" == $ajax_action )
-$Form = new \Form\LDAP_Auth();
-#elseif( "process_form" == $ajax_action )
-$Form = new \Form\Form();
-#end
-
-$Form->options = array(
-    'tmp_dir' => 'C:\\tmp\\', // Required for sending email attachment to form submitter
+$form_options = array(
+    'tmp_dir' => 'REPLACE_ME',
     'id' => '$formID',
     #if( "Yes" == $formDetails.getChild("email-results").value )
     'email' => true,
     'to' => '$formDetails.getChild("email-to").value',
-    'default_from' => 'address@domain.com',
-    'default_from_name' => 'Default Name',
+    'default_from' => 'REPLACE_ME',
+    'default_from_name' => 'REPLACE_ME',
     'subject' => '$formDetails.getChild("email-subject").value',
     #end
     #if( "Yes" == $formDetails.getChild("save-results").value )
@@ -52,7 +46,7 @@ $Form->options = array(
     'recaptcha_secret_key'  => 'REPLACE_ME',
     #end
     'stylesheet_path' => '${stylesheetPath}',
-    #if ( "ldap_auth" == $ajax_action )
+    #if ( "LDAP Login" == $formType )
         #set( $adGroups = $_XPathTool.selectNodes( $contentRoot, '//ad-groups/group' ) )
         #set( $success_action = $formDetails.getChild("success_action").value )
         #set( $success_data = $formDetails.getChild("success_data").value )
@@ -73,12 +67,7 @@ $Form->options = array(
     #end
 );
 
-$Form->fields = array(
-    'ajax_action' => array(
-        'fieldName' => 'ajax_action',
-        'type' => 'hidden',
-        'default_value' => '$ajax_action'
-    ),    
+$form_fields = array(  
 #set( $i = 1 )
 #foreach ( $field in $fields )
 #set( $fieldName = $field.getChild("field-name").value.replaceAll("[\']", "\\'") )
@@ -141,7 +130,7 @@ $Form->fields = array(
     'field-${i}' => array(
         'fieldName' => '${fieldName}',
         'type' => 'email',
-    	'required' => $required,
+        'required' => $required,
         'cloneable' => $cloneable,
         'sendAttachment' => $sendAttachment,
         'replyTo' => $replyTo
@@ -158,7 +147,7 @@ $Form->fields = array(
     'field-${i}' => array(
         'fieldName' => '${fieldName}',
         'type' => 'text',
-		'required' => $required,
+        'required' => $required,
         'cloneable' => $cloneable
     ),
 #end
@@ -181,7 +170,7 @@ $Form->fields = array(
     'field-${i}' => array(
         'fieldName' => '${fieldName}',
         'type' => 'datepicker',
-    	'required' => $required
+        'required' => $required
     ),
 #end
 ## Timepicker
@@ -205,7 +194,7 @@ $Form->fields = array(
     'field-${i}' => array(
         'fieldName' => '${fieldName}',
         'type' => 'textarea',
-    	'required' => $required
+        'required' => $required
     ),
 #end
 ## Checkbox
@@ -214,7 +203,7 @@ $Form->fields = array(
     'field-${i}' => array(
         'fieldName' => '${fieldName}',
         'type' => 'checkbox',
-    	'required' => $required,
+        'required' => $required,
         'default_value' => 'Checked',
         'options' => array(
         #foreach ( $checkboxOption in $checkboxOptions )
@@ -239,13 +228,19 @@ $Form->fields = array(
 #end
 );
 
-$Form->init();
+#if ( "LDAP Login" == $formType )
+$Form = new \Form\LDAP_Auth( $form_options, $form_fields );
+#elseif( "General" == $formType )
+$Form = new \Form\Form( $form_options, $form_fields );
+#end
+
+$Form->set();
 
 ?>
 #passthrough-top-->
 
 <head>
-	
+    
     <title>$title</title>
     
     <meta http-equiv="Content-type" content="text/html;charset=UTF-8"/>

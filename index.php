@@ -59,8 +59,7 @@ $options = array(
 $fields = array(
 
     /**
-    * Use these fields if ajax_action is set to ldap_auth. Right now it only does a redirect, however
-    * you may have it save a cookie, set a session var, or something else.
+    * Use these fields if using $Form = new \Form\LDAP_Auth().
     *
     *   'username' => array(
     *       'fieldName' => 'Username',
