@@ -237,7 +237,7 @@ class LDAP_auth extends Form
 	{
 		if ( !isset( $_POST['username'], $_POST['password'] ) ) {
             $return = 0;
-            break;
+           	return;
         }
 
         $response = $this->authorize();
