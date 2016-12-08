@@ -236,8 +236,7 @@ class LDAP_auth extends Form
 	public function validate_submission()
 	{
 		if ( !isset( $_POST['username'], $_POST['password'] ) ) {
-            $return = 0;
-           	return;
+           	return 0;
         }
 
         $response = $this->authorize();
