@@ -1,4 +1,4 @@
-<form id="<?=$id?>" role="form" class="form-horizontal">
+<form id="<?=$id?>" role="form" class="form-horizontal" method="POST">
     <div id="message" tabindex="0"></div>
     <?=$fields?>
     <div class="form-group">
